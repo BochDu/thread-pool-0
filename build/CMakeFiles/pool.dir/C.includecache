@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bochdu/workspace/thread-pool-0/main.c
+stdio.h
+-
+thread_pool.h
+/home/bochdu/workspace/thread-pool-0/thread_pool.h
+
+/home/bochdu/workspace/thread-pool-0/thread_pool.h
+pthread.h
+/home/bochdu/workspace/thread-pool-0/pthread.h
+stdlib.h
+-
+stdio.h
+-
+pthread.h
+-
+string.h
+-
+unistd.h
+-
+

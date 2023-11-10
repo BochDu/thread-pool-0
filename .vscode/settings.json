@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "thread_pool.h": "c",
+        "unistd.h": "c",
+        "pthread.h": "c"
+    }
+}

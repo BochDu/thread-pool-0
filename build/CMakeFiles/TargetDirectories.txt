@@ -1,0 +1,3 @@
+/home/bochdu/workspace/thread-pool-0/build/CMakeFiles/rebuild_cache.dir
+/home/bochdu/workspace/thread-pool-0/build/CMakeFiles/edit_cache.dir
+/home/bochdu/workspace/thread-pool-0/build/CMakeFiles/pool.dir
