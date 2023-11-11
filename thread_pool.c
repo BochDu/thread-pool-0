@@ -62,6 +62,8 @@ thread_pool_t *thread_pool_create(int thread_min, int thread_max, int queue_capa
             pthread_create(&pool->thread_id[i], NULL, worker_routine, pool);
         }
 
+        printf("thread pool create success\n");
+
         return pool;
 
     } while (0);
@@ -106,10 +108,7 @@ int thread_pool_destroy(thread_pool_t *pool)
         pthread_cond_signal(&pool->notempty);
     }
 
-    pthread_mutex_destroy(&pool->mutex_busy);
-    pthread_mutex_destroy(&pool->mutex_pool);
-    pthread_cond_destroy(&pool->notempty);
-    pthread_cond_destroy(&pool->notfull);
+    sleep(1);
 
     // free resource
     if (pool->thread_id != NULL)
@@ -124,17 +123,25 @@ int thread_pool_destroy(thread_pool_t *pool)
         pool->task_queue = NULL;
     }
 
+    pthread_mutex_destroy(&pool->mutex_busy);
+    pthread_mutex_destroy(&pool->mutex_pool);
+    pthread_cond_destroy(&pool->notempty);
+    pthread_cond_destroy(&pool->notfull);
+
     if (pool != NULL)
     {
         free(pool);
         pool = NULL;
     }
 
+    printf("thread pool destroy success\n");
+
     return 0;
 }
 
 void *worker_routine(void *arg)
 {
+    printf("thread %ld created\n", pthread_self());
 
     thread_pool_t *pool = (thread_pool_t *)arg;
 
@@ -143,7 +150,7 @@ void *worker_routine(void *arg)
 
         pthread_mutex_lock(&pool->mutex_pool);
 
-        while (pool->queue_size == 0 && pool->shutdown != 0)
+        while (pool->queue_size == 0 && pool->shutdown == 0)
         {
             // block worker routine
             pthread_cond_wait(&pool->notempty, &pool->mutex_pool);
@@ -202,7 +209,7 @@ void *manager_routine(void *arg)
 
     thread_pool_t *pool = (thread_pool_t *)arg;
 
-    while (!pool->shutdown)
+    while (pool->shutdown == 0)
     {
         sleep(3);
 
@@ -272,6 +279,8 @@ void *manager_routine(void *arg)
             }
         }
     }
+    
+    printf("manager thread exit\n");
 
     return NULL;
 }
@@ -298,13 +307,13 @@ static void thread_exit(thread_pool_t *pool)
 void thread_pool_add_task(thread_pool_t *pool, void (*fun)(void *), void *arg)
 {
     pthread_mutex_lock(&pool->mutex_pool);
-    while (pool->queue_size == pool->queue_capacity && !pool->shutdown)
+    while (pool->queue_size == pool->queue_capacity && pool->shutdown == 0)
     {
         // block producer routine
         pthread_cond_wait(&pool->notfull, &pool->mutex_pool);
     }
 
-    if (!pool->shutdown)
+    if (pool->shutdown == 1)
     {
         pthread_mutex_unlock(&pool->mutex_pool);
         return;
@@ -330,7 +339,7 @@ int thread_pool_get_busy(thread_pool_t *pool)
     pthread_mutex_lock(&pool->mutex_busy);
     int thread_busy = pool->thread_busy;
     pthread_mutex_unlock(&pool->mutex_busy);
-    
+
     return thread_busy;
 }
 

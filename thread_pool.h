@@ -35,7 +35,6 @@ typedef struct
 
     pthread_mutex_t mutex_pool; // lock whole pool
     pthread_mutex_t mutex_busy; // lock busy num
-
     pthread_cond_t notfull;  // task queue filled
     pthread_cond_t notempty; // task queue empty
 
@@ -47,6 +46,7 @@ int thread_pool_destroy(thread_pool_t *pool);
 
 void *worker_routine(void *arg);
 void *manager_routine(void *arg);
+
 void thread_pool_add_task(thread_pool_t *pool, void (*fun)(void *), void *arg);
 
 int thread_pool_get_busy(thread_pool_t *pool);
